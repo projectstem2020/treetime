@@ -1,0 +1,143 @@
+# Define locations for which builds should be created.
+# For each build we specify a subsampling scheme via an explicit key.
+# If the name of the focal geography differs from the build name this needs to
+# be specified explicity as geographic_name. In addition, we require the
+# geographic scale the build focuses on. Together name and scale serve a look-up
+# in the geo_hierarchy to define region, country, division, etc
+builds:
+  california:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: California
+  louisiana:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Louisiana
+  michigan:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Michigan
+  minnesota:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Minnesota
+  new-york:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: New York
+  virginia:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Virginia
+  washington:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Washington
+  wisconsin:
+    subsampling_scheme: state
+    geographic_scale: division
+    region: North America
+    country: USA
+    division: Wisconsin
+
+subsampling:
+  # Default subsampling logic for divisions
+  state:
+    # Focal samples for division
+    division:
+      group_by: "year month"
+      seq_per_group: 300
+      exclude: "--exclude-where 'region!={region}' 'country!={country}' 'division!={division}'"
+    # Contextual samples from division's country
+    country:
+      group_by: "division year month"
+      seq_per_group: 10
+      exclude: "--exclude-where 'region!={region}' 'country!={country}' 'division={division}'"
+      priorities:
+        type: "proximity"
+        focus: "division"
+    # Contextual samples from division's region
+    region:
+      group_by: "country year month"
+      seq_per_group: 12
+      exclude: "--exclude-where 'region!={region}' 'country={country}'"
+      priorities:
+        type: "proximity"
+        focus: "division"
+    # Contextual samples from the rest of the world, excluding the current
+    # division to avoid resampling.
+    global:
+      group_by: "country year month"
+      seq_per_group: 2
+      exclude: "--exclude-where 'region={region}'"
+      priorities:
+        type: "proximity"
+        focus: "division"
+
+adjust_metadata_regions:
+  focal_resolution: "division"
+
+# if different exposure traits should be used for some builds, specify here
+# otherwise the default exposure in config/config.yaml will used
+exposure:
+  california:
+    trait: "division"
+    exposure: "division_exposure"
+  louisiana:
+    trait: "division"
+    exposure: "division_exposure"
+  michigan:
+    trait: "division"
+    exposure: "division_exposure"
+  minnesota:
+    trait: "division"
+    exposure: "division_exposure"
+  new-york:
+    trait: "division"
+    exposure: "division_exposure"
+  virginia:
+    trait: "division"
+    exposure: "division_exposure"
+  washington:
+    trait: "division"
+    exposure: "division_exposure"
+  wisconsin:
+    trait: "division"
+    exposure: "division_exposure"
+
+# if different traits should be reconstructed for some builds, specify here
+# otherwise the default trait config in config/config.yaml will used
+traits:
+  california:
+    columns: ["division_exposure"]
+  louisiana:
+    columns: ["division_exposure"]
+  michigan:
+    columns: ["division_exposure"]
+  minnesota:
+    columns: ["division_exposure"]
+  new-york:
+    columns: ["division_exposure"]
+  virginia:
+    columns: ["division_exposure"]
+  washington:
+    columns: ["division_exposure"]
+  wisconsin:
+    columns: ["division_exposure"]
+
+files:
+  auspice_config: "profiles/spheres/auspice_config_spheres.json"
