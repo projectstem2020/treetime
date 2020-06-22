@@ -6,3 +6,4 @@ keep-going: True
 printshellcmds: True
 reason: True
 stats: stats.json
+use-conda: True
