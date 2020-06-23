@@ -152,11 +152,13 @@ not one our default scheme but custom ones.
 
 
 ### Custom subsampling schemes
+
 We implement hierarchical subsampling by producing multiple samples at different geographic scales
 and merge these samples into one file for further analysis.
 A build can specify any number of such samples which can be flexibly restricted to particular
 meta data fields and subsampled from groups with particular properties.
 For canton's this looks like this:
+
 ```yaml
 subsampling:
   # Default subsampling logic for divisions
@@ -165,12 +167,12 @@ subsampling:
     division:
       group_by: "year month"
       seq_per_group: 300
-      exclude: "--exclude-where 'region!={{region}}' 'country!={{country}}' 'division!={{division}}'"
+      exclude: "--exclude-where 'region!={region}' 'country!={country}' 'division!={division}'"
     # Contextual samples from division's country
     country:
       group_by: "division year month"
       seq_per_group: 20
-      exclude: "--exclude-where 'region!={{region}}' 'country!={{country}}' 'division={{division}}'"
+      exclude: "--exclude-where 'region!={region}' 'country!={country}' 'division={division}'"
       priorities:
         type: "proximity"
         focus: "division"
@@ -178,7 +180,7 @@ subsampling:
     region:
       group_by: "country year month"
       seq_per_group: 10
-      exclude: "--exclude-where 'region!={{region}}' 'country={{country}}'"
+      exclude: "--exclude-where 'region!={region}' 'country={country}'"
       priorities:
         type: "proximity"
         focus: "division"
@@ -187,15 +189,14 @@ subsampling:
     global:
       group_by: "country year month"
       seq_per_group: 5
-      exclude: "--exclude-where 'region={{region}}'"
+      exclude: "--exclude-where 'region={region}'"
       priorities:
         type: "proximity"
         focus: "division"
 ```
-All entries above canton level specify priorities. Currently, we have only implemented
-one type of priority called `proximity`.
-It attempts to selected sequences as close as possible to the focal samples
-specified as `focus: division`.
+
+All entries above canton level specify priorities. Currently, we have only implemented one type of priority called `proximity`.
+It attempts to selected sequences as close as possible to the focal samples specified as `focus: division`.
 The argument of the latter has to match the name of one of the other subsamples.
 
 In addition to the `exclude` filter, you can also specify strains to keep by providing a `query`.
